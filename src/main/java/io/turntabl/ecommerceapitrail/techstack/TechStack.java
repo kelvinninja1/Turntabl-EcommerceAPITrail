@@ -1,7 +1,21 @@
 package io.turntabl.ecommerceapitrail.techstack;
 
+import javax.persistence.*;
+
+@Entity
+@Table
 public class TechStack {
-    private Long Id;
+    @Id
+    @SequenceGenerator(
+            name = "techstack_sequence",
+            sequenceName = "techstack_sequence",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = GenerationType.SEQUENCE,
+            generator = "techstack_sequence"
+    )
+    private Long id;
     private String name;
     private Boolean isTested;
 
@@ -11,7 +25,7 @@ public class TechStack {
     }
 
     public TechStack(Long id, String name, Boolean isTested) {
-        Id = id;
+        id = id;
         this.name = name;
         this.isTested = isTested;
     }
@@ -20,11 +34,11 @@ public class TechStack {
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        id = id;
     }
 
     public String getName() {
@@ -46,7 +60,7 @@ public class TechStack {
     @Override
     public String toString() {
         return "TechStack{" +
-                "ID=" + Id +
+                "ID=" + id +
                 ", name='" + name + '\'' +
                 ", isTested=" + isTested +
                 '}';
