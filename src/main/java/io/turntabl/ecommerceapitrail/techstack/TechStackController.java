@@ -1,9 +1,8 @@
 package io.turntabl.ecommerceapitrail.techstack;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,6 +20,13 @@ public class TechStackController {
     @GetMapping
     public List<TechStack> listTechStacks(){
         return techStackService.getTechStack();
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<String> createStack(@RequestBody TechStack techStack){
+        techStackService.addTechStack(techStack);
+        return List.of("Success");
     }
 
 }
