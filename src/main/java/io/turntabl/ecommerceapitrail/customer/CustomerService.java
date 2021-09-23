@@ -19,4 +19,11 @@ public class CustomerService {
     public List<Customer> getCustomers() {
         return customerRepository.findAll();
     }
+
+    public void addCustomers(Customer customer) {
+        if (customer == null) {
+            throw new IllegalStateException("Customer details are empty");
+        }
+        customerRepository.save(customer);
+    }
 }
