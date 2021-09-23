@@ -34,4 +34,11 @@ public class CustomerController {
     public Customer getCustomer(@PathVariable("customerID") Long customerID){
         return customerService.getCustomer(customerID);
     }
+
+    @DeleteMapping(path = "{customerID}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> deleteCustomer(@PathVariable("customerID") Long customerID){
+        customerService.deleteCustomer(customerID);
+        return List.of("Success");
+    }
 }

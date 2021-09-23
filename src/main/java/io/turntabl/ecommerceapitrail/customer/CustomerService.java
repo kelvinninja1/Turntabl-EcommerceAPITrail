@@ -28,7 +28,15 @@ public class CustomerService {
     }
 
     public Customer getCustomer(Long customerID) {
-        Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new IllegalStateException("Customer with ID:" + customerID + " does exist"));
+        Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new IllegalStateException("Customer with ID:" + customerID + " does not exist"));
         return customer;
+    }
+
+    public void deleteCustomer(Long customerID) {
+        boolean exists = customerRepository.existsById(customerID);
+        if (!exists) {
+            throw new IllegalStateException("Customer with ID:" + customerID + " does not exist");
+        }
+        customerRepository.deleteById(customerID);
     }
 }
