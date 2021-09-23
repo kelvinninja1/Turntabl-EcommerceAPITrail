@@ -22,20 +22,23 @@ public class Customer {
     private LocalDate dateModified;
 
     public Customer() {
+        this.dateAdded = LocalDate.now();
+        this.dateModified = LocalDate.now();
     }
 
-    public Customer(Long id, String name, LocalDate dateAdded, LocalDate dateModified) {
+    public Customer(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.dateAdded = dateAdded;
-        this.dateModified = dateModified;
+        this.dateAdded = LocalDate.now();
+        this.dateModified = LocalDate.now();
     }
 
-    public Customer(String name, LocalDate dateAdded, LocalDate dateModified) {
+    public Customer(String name) {
         this.name = name;
-        this.dateAdded = dateAdded;
-        this.dateModified = dateModified;
+        this.dateAdded = LocalDate.now();
+        this.dateModified = LocalDate.now();
     }
+
 
     public Long getId() {
         return id;

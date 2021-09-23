@@ -33,14 +33,14 @@ class CustomerTest {
 
     @Test
     void testConstructorWithID() {
-        Customer actualCustomer = new Customer(Id, name, dateAdded, dateModified);
+        Customer actualCustomer = new Customer(Id, name);
         assertEquals("Customer{id="+Id+", name='"+name+"', dateAdded="+dateAdded+", dateModified="+dateModified+"}",
                 actualCustomer.toString());
     }
 
     @Test
     void testConstructorWithoutID() {
-        Customer actualCustomer = new Customer(name, dateAdded, dateModified);
+        Customer actualCustomer = new Customer(name);
         assertEquals("Customer{id=null, name='"+name+"', dateAdded="+dateAdded+", dateModified="+dateModified+"}",
                 actualCustomer.toString());
     }

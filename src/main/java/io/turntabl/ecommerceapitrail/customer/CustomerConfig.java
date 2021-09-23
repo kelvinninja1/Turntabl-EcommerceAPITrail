@@ -14,14 +14,10 @@ public class CustomerConfig {
     CommandLineRunner customerCommandLineRunner(CustomerRepository customerRepository){
         return args -> {
             Customer kicki = new Customer(
-                    "Kicki Frisch",
-                    LocalDate.now(),
-                    LocalDate.now()
+                    "Kicki Frisch"
             );
             Customer kelvin = new Customer(
-                    "Kelvin Morrison",
-                    LocalDate.now(),
-                    LocalDate.now()
+                    "Kelvin Morrison"
             );
 
             customerRepository.saveAll(
