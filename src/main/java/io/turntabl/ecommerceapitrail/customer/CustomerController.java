@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("v1/customers")
@@ -40,5 +41,14 @@ public class CustomerController {
     public List<String> deleteCustomer(@PathVariable("customerID") Long customerID){
         customerService.deleteCustomer(customerID);
         return List.of("Success");
+    }
+
+    @PutMapping(path = "{customerID}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Object> updateCustomer(@PathVariable("customerID") Long customerId, @RequestBody Map<String, Object> change){
+        customerService.updateCustomer(customerId, change);
+        return List.of("Success",
+                change);
+
     }
 }
