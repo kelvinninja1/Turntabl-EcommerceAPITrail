@@ -13,15 +13,15 @@ public class CustomerConfig {
     @Bean
     CommandLineRunner customerCommandLineRunner(CustomerRepository customerRepository){
         return args -> {
-            Customer kicki = new Customer(
-                    "Kicki Frisch"
+            Customer maya = new Customer(
+                    "Maya Holiday"
             );
-            Customer kelvin = new Customer(
-                    "Kelvin Morrison"
+            Customer nathan = new Customer(
+                    "Nathan Banks"
             );
 
             customerRepository.saveAll(
-                    List.of(kicki, kelvin)
+                    List.of(maya, nathan)
             );
         };
     }
