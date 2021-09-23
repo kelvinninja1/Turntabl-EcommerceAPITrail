@@ -1,6 +1,7 @@
 package io.turntabl.ecommerceapitrail.customer;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,13 +17,21 @@ public class CustomerController {
     }
 
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public List<Customer> listCustomers(){
         return customerService.getCustomers();
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public List<Object> addCustomers(@RequestBody Customer customer){
         customerService.addCustomers(customer);
         return List.of("Success", customer);
+    }
+
+    @GetMapping(path = "{customerID}")
+    @ResponseStatus(HttpStatus.OK)
+    public Customer getCustomer(@PathVariable("customerID") Long customerID){
+        return customerService.getCustomer(customerID);
     }
 }

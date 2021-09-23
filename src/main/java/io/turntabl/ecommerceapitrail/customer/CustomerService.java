@@ -26,4 +26,9 @@ public class CustomerService {
         }
         customerRepository.save(customer);
     }
+
+    public Customer getCustomer(Long customerID) {
+        Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new IllegalStateException("Customer with ID:" + customerID + " does exist"));
+        return customer;
+    }
 }
