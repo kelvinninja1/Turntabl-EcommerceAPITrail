@@ -1,5 +1,7 @@
 package io.turntabl.ecommerceapitrail.product;
 
+import io.turntabl.ecommerceapitrail.product.stock.Stock;
+import io.turntabl.ecommerceapitrail.product.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +13,15 @@ import java.util.Map;
 @RequestMapping("v1/products")
 public class ProductController {
     private final ProductService productService;
+    private final StockService stockService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, StockService stockService) {
         this.productService = productService;
+        this.stockService = stockService;
     }
+
+
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -50,5 +56,23 @@ public class ProductController {
         return List.of("Success",
                 change);
 
+    }
+
+    @GetMapping(path = "/stock")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Stock> listProductsStock(){
+        return stockService.getStocks();
+    }
+
+    @GetMapping(path = "/stock/available")
+    @ResponseStatus(HttpStatus.OK)
+    public Stock listProductsStockAvailable(){
+        return stockService.getAvailableStocks();
+    }
+
+    @GetMapping(path = "/stock/unavailable")
+    @ResponseStatus(HttpStatus.OK)
+    public Stock listProductsStockUnavailable(){
+        return stockService.getUnavailableStocks();
     }
 }
