@@ -28,7 +28,7 @@ class StockTest {
         assertEquals(dateModified, actualStock.getDateModified());
         assertEquals(productID, actualStock.getProduct_id());
         assertEquals(quantity, actualStock.getQuantity());
-        assertEquals("Stock{product_id=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
+        assertEquals("Stock{product=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
                 actualStock.toString());
     }
 
@@ -41,7 +41,7 @@ class StockTest {
         assertEquals(quantity, actualStock.getQuantity());
         assertEquals(dateAdded, actualStock.getDateAdded());
         assertEquals(dateModified, actualStock.getDateModified());
-        assertEquals("Stock{product_id=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
+        assertEquals("Stock{product=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
                 actualStock.toString());
     }
 
@@ -53,7 +53,7 @@ class StockTest {
         assertEquals(quantity, actualStock.getQuantity());
         assertEquals(dateAdded, actualStock.getDateAdded());
         assertEquals(dateModified, actualStock.getDateModified());
-        assertEquals("Stock{product_id=1, product_id=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
+        assertEquals("Stock{product=1, product=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
                 actualStock.toString());
     }
 }

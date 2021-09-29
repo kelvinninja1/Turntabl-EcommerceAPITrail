@@ -29,7 +29,6 @@ public class ProductService {
             throw new IllegalStateException("Product details are empty");
         }
         productRepository.save(product);
-
         return product;
     }
 

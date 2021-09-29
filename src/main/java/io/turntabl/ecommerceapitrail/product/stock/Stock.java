@@ -16,34 +16,36 @@ public class Stock {
             strategy = GenerationType.SEQUENCE,
             generator = "stock_sequence"
     )
-    private Long product_id;
-    private Integer quantity;
+    private Long Id;
+    private Long product;
+    private Integer quantity = 0;
     private LocalDate dateAdded;
     private LocalDate dateModified;
 
     public Stock() {
     }
 
-    public Stock(Long productID, Integer quantity) {
-        this.product_id = productID;
+    public Stock(Long Id, Long productID, Integer quantity) {
+        this.product = productID;
         this.quantity = quantity;
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
 
-    public Stock(Long productID) {
-        this.product_id = productID;
-        this.quantity = 1;
+    public Stock(Long productID, Integer quantity) {
+        this.product = productID;
+        this.quantity = quantity;
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
 
+
     public Long getProduct_id() {
-        return product_id;
+        return product;
     }
 
-    public void setProduct_id(Long product_id) {
-        this.product_id = product_id;
+    public void setProduct_id(Long product) {
+        this.product = product;
     }
 
     public Integer getQuantity() {
@@ -74,7 +76,7 @@ public class Stock {
     @Override
     public String toString() {
         return "Stock{" +
-                "product_id=" + product_id +
+                "product=" + product +
                 ", quantity=" + quantity +
                 ", dateAdded=" + dateAdded +
                 ", dateModified=" + dateModified +

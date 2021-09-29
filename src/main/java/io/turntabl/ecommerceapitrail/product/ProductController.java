@@ -47,6 +47,7 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public List<String> deleteProduct(@PathVariable("productID") Long productID){
         productService.deleteProduct(productID);
+        stockService.deleteStock(productID);
         return List.of("Success");
     }
 
@@ -54,9 +55,9 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public List<Object> updateProduct(@PathVariable("productID") Long productID, @RequestBody Map<String, Object> change){
         productService.updateProduct(productID, change);
+        stockService.updateStock(productID, Integer.parseInt(change.get("quantity").toString()));
         return List.of("Success",
                 change);
-
     }
 
     @GetMapping(path = "/stock")
@@ -67,13 +68,20 @@ public class ProductController {
 
     @GetMapping(path = "/stock/available")
     @ResponseStatus(HttpStatus.OK)
-    public Stock listProductsStockAvailable(){
+    public List<Stock> listProductsStockAvailable(){
         return stockService.getAvailableStocks();
     }
 
     @GetMapping(path = "/stock/unavailable")
     @ResponseStatus(HttpStatus.OK)
-    public Stock listProductsStockUnavailable(){
+    public List<Stock> listProductsStockUnavailable(){
         return stockService.getUnavailableStocks();
+    }
+
+
+    @GetMapping(path = "{productID}/stock")
+    @ResponseStatus(HttpStatus.OK)
+    public Stock getProductStock(@PathVariable("productID") Long productID){
+        return stockService.getStock(productID);
     }
 }
