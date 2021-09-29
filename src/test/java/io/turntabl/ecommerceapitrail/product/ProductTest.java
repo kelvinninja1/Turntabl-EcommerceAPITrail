@@ -2,6 +2,7 @@ package io.turntabl.ecommerceapitrail.product;
 
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,6 +13,8 @@ class ProductTest {
     String name = "M1 MacBook Pro";
     LocalDate dateAdded = LocalDate.now();
     LocalDate dateModified = LocalDate.now();
+    BigDecimal price = BigDecimal.valueOf(10);
+    Integer quantity = 5;
 
 
     @Test
@@ -33,7 +36,7 @@ class ProductTest {
 
     @Test
     void testConstructorWithID() {
-        Product actualProduct = new Product(Id, name);
+        Product actualProduct = new Product(Id, name, price, quantity);
 
         assertEquals(Id, actualProduct.getId().longValue());
         assertEquals(name, actualProduct.getName());
@@ -45,7 +48,7 @@ class ProductTest {
 
     @Test
     void testConstructorWithoutID() {
-        Product actualProduct = new Product(name);
+        Product actualProduct = new Product(name, price, quantity);
 
         assertEquals(name, actualProduct.getName());
         assertEquals(dateAdded, actualProduct.getDateAdded());

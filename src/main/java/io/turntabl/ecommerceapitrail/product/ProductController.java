@@ -32,8 +32,9 @@ public class ProductController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public List<Object> addProducts(@RequestBody Product product){
-        productService.addProducts(product);
-        return List.of("Success", product);
+        Product newProduct = productService.addProducts(product);
+        stockService.addStocks(new Stock(newProduct.getId(), newProduct.getQuantity()));
+        return List.of("Success", newProduct);
     }
 
     @GetMapping(path = "{productID}")

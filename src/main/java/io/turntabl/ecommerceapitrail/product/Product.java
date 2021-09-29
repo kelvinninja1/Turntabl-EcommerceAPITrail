@@ -1,6 +1,10 @@
 package io.turntabl.ecommerceapitrail.product;
 
+import io.turntabl.ecommerceapitrail.product.stock.Stock;
+import io.turntabl.ecommerceapitrail.product.stock.StockService;
+
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -20,21 +24,29 @@ public class Product {
     private String name;
     private LocalDate dateAdded;
     private LocalDate dateModified;
+    private BigDecimal price = BigDecimal.valueOf(0);
+
+    @Transient
+    private Integer quantity = 0;
 
     public Product() {
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
 
-    public Product(Long id, String name) {
+    public Product(Long id, String name, BigDecimal price, Integer quantity) {
         this.id = id;
         this.name = name;
+        this.price = price;
+        this.quantity = quantity;
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
 
-    public Product(String name) {
+    public Product(String name, BigDecimal price, Integer quantity) {
         this.name = name;
+        this.price = price;
+        this.quantity = quantity;
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
@@ -72,6 +84,22 @@ public class Product {
         this.dateModified = dateModified;
     }
 
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
     @Override
     public String toString() {
         return "Product{" +
@@ -79,6 +107,8 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", dateAdded=" + dateAdded +
                 ", dateModified=" + dateModified +
+                ", price=" + price +
                 '}';
     }
+
 }

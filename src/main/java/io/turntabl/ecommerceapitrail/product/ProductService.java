@@ -24,11 +24,13 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public void addProducts(Product product) {
+    public Product addProducts(Product product) {
         if (product == null) {
             throw new IllegalStateException("Product details are empty");
         }
         productRepository.save(product);
+
+        return product;
     }
 
     public Product getProduct(Long productID) {
