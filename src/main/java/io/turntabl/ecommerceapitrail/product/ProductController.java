@@ -1,11 +1,14 @@
 package io.turntabl.ecommerceapitrail.product;
 
+import io.turntabl.ecommerceapitrail.product.price.Price;
+import io.turntabl.ecommerceapitrail.product.price.PriceService;
 import io.turntabl.ecommerceapitrail.product.stock.Stock;
 import io.turntabl.ecommerceapitrail.product.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +17,13 @@ import java.util.Map;
 public class ProductController {
     private final ProductService productService;
     private final StockService stockService;
+    private final PriceService priceService;
 
     @Autowired
-    public ProductController(ProductService productService, StockService stockService) {
+    public ProductController(ProductService productService, StockService stockService, PriceService priceService) {
         this.productService = productService;
         this.stockService = stockService;
+        this.priceService = priceService;
     }
 
 
@@ -34,6 +39,7 @@ public class ProductController {
     public List<Object> addProducts(@RequestBody Product product){
         Product newProduct = productService.addProducts(product);
         stockService.addStocks(new Stock(newProduct.getId(), newProduct.getQuantity()));
+        priceService.addPrices(new Price(newProduct.getId(), newProduct.getPrice()));
         return List.of("Success", newProduct);
     }
 
@@ -48,6 +54,7 @@ public class ProductController {
     public List<String> deleteProduct(@PathVariable("productID") Long productID){
         productService.deleteProduct(productID);
         stockService.deleteStock(productID);
+        priceService.deletePrice(productID);
         return List.of("Success");
     }
 
@@ -56,6 +63,7 @@ public class ProductController {
     public List<Object> updateProduct(@PathVariable("productID") Long productID, @RequestBody Map<String, Object> change){
         productService.updateProduct(productID, change);
         stockService.updateStock(productID, Integer.parseInt(change.get("quantity").toString()));
+        priceService.updatePrice(productID, BigDecimal.valueOf(Long.parseLong(change.get("price").toString())));
         return List.of("Success",
                 change);
     }
@@ -83,5 +91,11 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public Stock getProductStock(@PathVariable("productID") Long productID){
         return stockService.getStock(productID);
+    }
+
+    @GetMapping(path = "{productID}/price")
+    @ResponseStatus(HttpStatus.OK)
+    public Price getProductPrice(@PathVariable("productID") Long productID){
+        return priceService.getPrice(productID);
     }
 }

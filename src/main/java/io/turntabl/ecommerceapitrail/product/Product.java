@@ -24,6 +24,8 @@ public class Product {
     private String name;
     private LocalDate dateAdded;
     private LocalDate dateModified;
+
+    @Transient
     private BigDecimal price = BigDecimal.valueOf(0);
 
     @Transient
@@ -107,7 +109,6 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", dateAdded=" + dateAdded +
                 ", dateModified=" + dateModified +
-                ", price=" + price +
                 '}';
     }
 
