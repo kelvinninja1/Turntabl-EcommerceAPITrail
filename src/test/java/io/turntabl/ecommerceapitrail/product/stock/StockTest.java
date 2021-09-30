@@ -53,7 +53,7 @@ class StockTest {
         assertEquals(quantity, actualStock.getQuantity());
         assertEquals(dateAdded, actualStock.getDateAdded());
         assertEquals(dateModified, actualStock.getDateModified());
-        assertEquals("Stock{product=1, product=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
+        assertEquals("Stock{product=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
                 actualStock.toString());
     }
 }
