@@ -19,14 +19,14 @@ class StockTest {
     void testEmptyConstructor() {
 
         Stock actualStock = new Stock();
-        actualStock.setProduct_id(productID);
+        actualStock.setProduct(productID);
         actualStock.setQuantity(quantity);
         actualStock.setDateAdded(dateAdded);
         actualStock.setDateModified(dateModified);
 
         assertEquals(dateAdded, actualStock.getDateAdded());
         assertEquals(dateModified, actualStock.getDateModified());
-        assertEquals(productID, actualStock.getProduct_id());
+        assertEquals(productID, actualStock.getProduct());
         assertEquals(quantity, actualStock.getQuantity());
         assertEquals("Stock{product=" + productID +", quantity=" + quantity +", dateAdded="+dateAdded+", dateModified="+dateModified+"}",
                 actualStock.toString());
@@ -37,7 +37,7 @@ class StockTest {
         Stock actualStock = new Stock(productID, quantity);
 
 
-        assertEquals(productID, actualStock.getProduct_id());
+        assertEquals(productID, actualStock.getProduct());
         assertEquals(quantity, actualStock.getQuantity());
         assertEquals(dateAdded, actualStock.getDateAdded());
         assertEquals(dateModified, actualStock.getDateModified());
@@ -49,7 +49,7 @@ class StockTest {
     void testConstructorWithoutID() {
         Stock actualStock = new Stock(productID, quantity);
 
-        assertEquals(productID, actualStock.getProduct_id());
+        assertEquals(productID, actualStock.getProduct());
         assertEquals(quantity, actualStock.getQuantity());
         assertEquals(dateAdded, actualStock.getDateAdded());
         assertEquals(dateModified, actualStock.getDateModified());

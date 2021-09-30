@@ -40,14 +40,13 @@ public class Stock {
     }
 
 
-    public Long getProduct_id() {
+    public Long getProduct() {
         return product;
     }
 
-    public void setProduct_id(Long product) {
+    public void setProduct(Long product) {
         this.product = product;
     }
-
     public Integer getQuantity() {
         return quantity;
     }
