@@ -84,12 +84,28 @@ public class OrdersController {
         return List.of("Success");
     }
 
-    @PutMapping(path = "items/{orderID}")
+    @PutMapping(path = "items/{itemID}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Object> updateItem(@PathVariable("productID") Long productID, @RequestBody Map<String, Object> change){
-        itemService.updateItem(productID, change);
+    public List<Object> updateItem(@PathVariable("itemID") Long itemID, @RequestBody Map<String, Object> change){
+        itemService.updateItem(itemID, change);
         return List.of("Success",
                 change);
     }
+
+
+    @GetMapping("orders/last/{months}/months")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Orders> listOrdersOverLastXMonths(@PathVariable("months") Integer months){
+        return ordersService.getOrdersOverLastXMonths(months);
+    }
+
+
+    @GetMapping("orders/multiple/customers/")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Orders> listCustomersWithMultipleOrders(){
+        return ordersService.getCustomersWithMultipleOrders();
+    }
+
+
 
 }
