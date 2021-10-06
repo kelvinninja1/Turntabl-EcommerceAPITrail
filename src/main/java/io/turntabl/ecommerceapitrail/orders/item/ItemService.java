@@ -50,7 +50,7 @@ public class ItemService {
 
     @Transactional
     public void updateItem(Long itemID, Map<String, Object> change) {
-        Item item = itemRepository.findByOrder(itemID).orElseThrow(() -> new IllegalStateException("Item with Order ID:" + itemID + " does not exist"));
+        Item item = itemRepository.findById(itemID).orElseThrow(() -> new IllegalStateException("Item with Order ID:" + itemID + " does not exist"));
 
         Integer quantity = Integer.parseInt(change.get("quantity").toString());
         if (quantity > 0 && !Objects.equals(quantity, item.getQuantity())) {

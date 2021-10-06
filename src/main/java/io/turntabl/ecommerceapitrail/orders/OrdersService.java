@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,5 +55,14 @@ public class OrdersService {
             order.setCustomer(customer);
             order.setDateModified(LocalDate.now());
         }
+    }
+
+    public List<Orders> getOrdersOverLastXMonths(Integer months) {
+//        LocalDate startFrom = LocalDate.now().minusMonths(months);
+        return ordersRepository.findAllByDateAddedAfter(LocalDate.now().minusMonths(months));
+    }
+
+    public List<Orders> getCustomersWithMultipleOrders() {
+        return ordersRepository.findAllCustomersWithMultipleOrders();
     }
 }
