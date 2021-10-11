@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -38,8 +37,6 @@ public class ProductController {
     @ResponseStatus(HttpStatus.CREATED)
     public List<Object> addProducts(@RequestBody Product product){
         Product newProduct = productService.addProducts(product);
-        stockService.addStocks(new Stock(newProduct.getId(), newProduct.getQuantity()));
-        priceService.addPrices(new Price(newProduct.getId(), newProduct.getPrice()));
         return List.of("Success", newProduct);
     }
 
@@ -53,8 +50,6 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public List<String> deleteProduct(@PathVariable("productID") Long productID){
         productService.deleteProduct(productID);
-        stockService.deleteStock(productID);
-        priceService.deletePrice(productID);
         return List.of("Success");
     }
 
@@ -62,8 +57,6 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public List<Object> updateProduct(@PathVariable("productID") Long productID, @RequestBody Map<String, Object> change){
         productService.updateProduct(productID, change);
-        stockService.updateStock(productID, Integer.parseInt(change.get("quantity").toString()));
-        priceService.updatePrice(productID, BigDecimal.valueOf(Long.parseLong(change.get("price").toString())));
         return List.of("Success",
                 change);
     }
@@ -72,6 +65,13 @@ public class ProductController {
     @ResponseStatus(HttpStatus.OK)
     public List<Stock> listProductsStock(){
         return stockService.getStocks();
+    }
+
+    @PostMapping(path = "/stock")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<Object> addStocks(@RequestBody Stock stock){
+        Stock newStock = stockService.addStocks(stock);
+        return List.of("Success", newStock);
     }
 
     @GetMapping(path = "/stock/available")
@@ -93,9 +93,47 @@ public class ProductController {
         return stockService.getStock(productID);
     }
 
+    @PutMapping(path = "{productID}/stock")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Object> updateStock(@PathVariable("productID") Long productID, @RequestBody Stock stock){
+        Stock newStock = stockService.updateStock(productID, stock);
+        return List.of("Success",
+                newStock);
+    }
+
+    @DeleteMapping(path = "{productID}/stock")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> deleteProductStock(@PathVariable("productID") Long productID){
+        stockService.deleteStock(productID);
+        return List.of("Success");
+    }
+
+    @PostMapping(path = "/price")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<Object> addPrices(@RequestBody Price price){
+        Price newPrice = priceService.addPrices(price);
+        return List.of("Success", newPrice);
+    }
+
+    @PutMapping(path = "{productID}/price")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Object> updatePrice(@PathVariable("productID") Long productID, @RequestBody Price price){
+        Price newPrice = priceService.updatePrice(productID, price);
+        return List.of("Success",
+                newPrice);
+    }
+
     @GetMapping(path = "{productID}/price")
     @ResponseStatus(HttpStatus.OK)
     public Price getProductPrice(@PathVariable("productID") Long productID){
         return priceService.getPrice(productID);
     }
+
+    @DeleteMapping(path = "{productID}/price")
+    @ResponseStatus(HttpStatus.OK)
+    public List<String> deleteProductPrice(@PathVariable("productID") Long productID){
+        priceService.deletePrice(productID);
+        return List.of("Success");
+    }
+
 }

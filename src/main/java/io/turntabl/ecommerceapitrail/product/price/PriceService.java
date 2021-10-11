@@ -45,13 +45,15 @@ public class PriceService {
     }
 
     @Transactional
-    public void updatePrice(Long productID, BigDecimal amount) {
+    public Price updatePrice(Long productID, Price newPrice) {
+        BigDecimal amount = newPrice.getAmount();
         Price price = priceRepository.findByProduct(productID).orElseThrow(() -> new IllegalStateException("Price with Product ID:" + productID + " does not exist"));
 
         if (!Objects.equals(amount, price.getAmount())) {
             price.setAmount(amount);
             price.setDateModified(LocalDate.now());
         }
+        return price;
     }
 
 }

@@ -1,10 +1,6 @@
 package io.turntabl.ecommerceapitrail.product;
 
-import io.turntabl.ecommerceapitrail.product.stock.Stock;
-import io.turntabl.ecommerceapitrail.product.stock.StockService;
-
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -25,30 +21,20 @@ public class Product {
     private LocalDate dateAdded;
     private LocalDate dateModified;
 
-    @Transient
-    private BigDecimal price = BigDecimal.valueOf(0);
-
-    @Transient
-    private Integer quantity = 0;
-
     public Product() {
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
 
-    public Product(Long id, String name, BigDecimal price, Integer quantity) {
+    public Product(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.price = price;
-        this.quantity = quantity;
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
 
-    public Product(String name, BigDecimal price, Integer quantity) {
+    public Product(String name) {
         this.name = name;
-        this.price = price;
-        this.quantity = quantity;
         this.dateAdded = LocalDate.now();
         this.dateModified = LocalDate.now();
     }
@@ -84,22 +70,6 @@ public class Product {
 
     public void setDateModified(LocalDate dateModified) {
         this.dateModified = dateModified;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
     @Override
