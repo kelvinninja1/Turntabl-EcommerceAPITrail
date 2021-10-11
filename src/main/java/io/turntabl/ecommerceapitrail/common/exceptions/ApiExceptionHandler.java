@@ -14,49 +14,29 @@ public class ApiExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<Object> handleBadRequestException(BadRequestException e){
         HttpStatus badRequest = HttpStatus.BAD_REQUEST;
-        ApiException apiException = new ApiException(
-                e.getMessage(),
-                badRequest,
-                badRequest.value(),
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
-        return new ResponseEntity<>(apiException, badRequest);
+        return new ResponseEntity<>(apiException(e.getMessage(), badRequest), badRequest);
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<Object> handleNotFoundException(NotFoundException e){
         HttpStatus notFound = HttpStatus.NOT_FOUND;
-        ApiException apiException = new ApiException(
-                e.getMessage(),
-                notFound,
-                notFound.value(),
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
-        return new ResponseEntity<>(apiException, notFound);
+        return new ResponseEntity<>(apiException(e.getMessage(), notFound), notFound);
     }
 
     @ExceptionHandler(AlreadyExistException.class)
     public ResponseEntity<Object> handleAlreadyExistException(AlreadyExistException e){
         HttpStatus conflict = HttpStatus.CONFLICT;
-        ApiException apiException = new ApiException(
-                e.getMessage(),
-                conflict,
-                conflict.value(),
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
-        return new ResponseEntity<>(apiException, conflict);
+        return new ResponseEntity<>(apiException(e.getMessage(), conflict), conflict);
     }
 
     @ExceptionHandler(NotAcceptableException.class)
     public ResponseEntity<Object> NotAcceptableException(NotAcceptableException e){
         HttpStatus notAcceptable = HttpStatus.NOT_ACCEPTABLE;
-        ApiException apiException = new ApiException(
-                e.getMessage(),
-                notAcceptable,
-                notAcceptable.value(),
-                ZonedDateTime.now(ZoneId.of("Z"))
-        );
-        return new ResponseEntity<>(apiException, notAcceptable);
+        return new ResponseEntity<>(apiException(e.getMessage(), notAcceptable), notAcceptable);
+    }
+
+    private ApiException apiException(String message, HttpStatus httpStatus){
+        return new ApiException(message, httpStatus, httpStatus.value(), ZonedDateTime.now(ZoneId.of("Z")));
     }
 
 
