@@ -1,5 +1,6 @@
 package io.turntabl.ecommerceapitrail.orders;
 
+import com.sun.istack.NotNull;
 import io.turntabl.ecommerceapitrail.orders.item.Item;
 import io.turntabl.ecommerceapitrail.orders.item.ItemService;
 import io.turntabl.ecommerceapitrail.product.price.Price;
@@ -40,14 +41,14 @@ public class OrdersController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public List<Object> addOrders(@RequestBody Orders order){
+    public List<Object> addOrders(@NotNull @RequestBody Orders order){
         Orders newOrder = ordersService.addOrders(order);
         return List.of("Success", newOrder);
     }
 
     @GetMapping(path = "{orderID}")
     @ResponseStatus(HttpStatus.OK)
-    public List getOrder(@PathVariable("orderID") Long orderID){
+    public List getOrder(@NotNull @PathVariable("orderID") Long orderID){
         Orders order = ordersService.getOrder(orderID);
         List<Item> orderItems = itemService.getOrderItems(orderID);
         return List.of(
@@ -58,7 +59,7 @@ public class OrdersController {
 
     @DeleteMapping(path = "{orderID}")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> deleteOrder(@PathVariable("orderID") Long orderID){
+    public List<String> deleteOrder(@NotNull @PathVariable("orderID") Long orderID){
         ordersService.deleteOrder(orderID);
         // Consider updating Stock
         itemService.deleteItem(orderID);
@@ -73,14 +74,14 @@ public class OrdersController {
 
     @DeleteMapping(path = "items/{itemID}")
     @ResponseStatus(HttpStatus.OK)
-    public List<String> deleteOrderItems(@PathVariable("itemID") Long itemID){
+    public List<String> deleteOrderItems(@NotNull @PathVariable("itemID") Long itemID){
         itemService.deleteItem(itemID);
         return List.of("Success");
     }
 
     @PutMapping(path = "items/{itemID}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Object> updateItem(@PathVariable("itemID") Long itemID, @RequestBody Map<String, Object> change){
+    public List<Object> updateItem(@NotNull @PathVariable("itemID") Long itemID, @NotNull @RequestBody Map<String, Object> change){
         itemService.updateItem(itemID, change);
         return List.of("Success",
                 change);
@@ -89,7 +90,7 @@ public class OrdersController {
 
     @GetMapping("orders/last/{months}/months")
     @ResponseStatus(HttpStatus.OK)
-    public List<Orders> listOrdersOverLastXMonths(@PathVariable("months") Integer months){
+    public List<Orders> listOrdersOverLastXMonths(@NotNull @PathVariable("months") Integer months){
         return ordersService.getOrdersOverLastXMonths(months);
     }
 
