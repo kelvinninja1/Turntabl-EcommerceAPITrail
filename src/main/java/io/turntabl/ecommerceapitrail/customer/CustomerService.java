@@ -1,12 +1,18 @@
 package io.turntabl.ecommerceapitrail.customer;
 
+import io.turntabl.ecommerceapitrail.common.exceptions.AlreadyExistException;
+import io.turntabl.ecommerceapitrail.common.exceptions.BadRequestException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotAcceptableException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotFoundException;
+import net.bytebuddy.implementation.bytecode.Throw;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -20,38 +26,51 @@ public class CustomerService {
     }
 
 
-    public List<Customer> getCustomers() {
-        return customerRepository.findAll();
+    public ResponseEntity<List<Customer>> getCustomers() {
+        List<Customer> customers = customerRepository.findAll();
+        return new ResponseEntity<List<Customer>>(customers, HttpStatus.CREATED);
     }
 
-    public void addCustomers(Customer customer) {
-        if (customer == null) {
-            throw new IllegalStateException("Customer details are empty");
+    public ResponseEntity<Customer> addCustomers(Customer customer) {
+        if (customer.getName() != null && customer.getName().length() > 0) {
+            Customer newCustomer = customerRepository.save(customer);
+            return new ResponseEntity<Customer>(newCustomer, HttpStatus.CREATED);
+        } else {
+            throw new BadRequestException("Customer details are empty, bad or Un-formatted");
         }
-        customerRepository.save(customer);
+
     }
 
-    public Customer getCustomer(Long customerID) {
-        Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new IllegalStateException("Customer with ID:" + customerID + " does not exist"));
-        return customer;
+    public ResponseEntity<Customer> getCustomer(Long customerID) {
+        Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new NotFoundException("Customer with ID:" + customerID + " does not exist"));
+        return new ResponseEntity<Customer>(customer, HttpStatus.CREATED);
     }
 
-    public void deleteCustomer(Long customerID) {
+    public ResponseEntity<Customer> deleteCustomer(Long customerID) {
         boolean exists = customerRepository.existsById(customerID);
         if (!exists) {
-            throw new IllegalStateException("Customer with ID:" + customerID + " does not exist");
+            throw new NotFoundException("Customer with ID:" + customerID + " does not exist");
         }
         customerRepository.deleteById(customerID);
+        return new ResponseEntity<Customer>(HttpStatus.NO_CONTENT);
     }
 
-    @Transactional
-    public void updateCustomer(Long customerID, Map<String, Object> change) {
-        Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new IllegalStateException("Customer with ID:" + customerID + " does not exist"));
+    public ResponseEntity<Customer> updateCustomer(Long customerID, Customer updatedCustomer) {
+        Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new NotFoundException("Customer with ID:" + customerID + " does not exist"));
 
-        String name = change.get("name").toString();
-        if (name != null && name.length() > 0 && !Objects.equals(name, customer.getName())) {
-            customer.setName(name);
-            customer.setDateModified(LocalDate.now());
+        String name = updatedCustomer.getName();
+        if (name != null && name.length() > 0) {
+            if (!Objects.equals(name, customer.getName())) {
+                BeanUtils.copyProperties(updatedCustomer, customer);
+                customer.setId(customerID);
+                customer.setDateModified(LocalDate.now());
+                customerRepository.save(customer);
+                return new ResponseEntity<Customer>(customer,HttpStatus.ACCEPTED);
+            } else {
+                throw new NotAcceptableException("No change Required, Updated details already exist");
+            }
+        } else {
+            throw new BadRequestException("Customer details are empty, bad or Un-formatted");
         }
     }
 }
