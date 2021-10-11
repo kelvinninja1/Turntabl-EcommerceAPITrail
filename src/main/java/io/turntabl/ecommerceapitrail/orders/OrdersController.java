@@ -71,12 +71,6 @@ public class OrdersController {
         return stockService.getStocks();
     }
 
-    @GetMapping(path = "{orderID}/item")
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Object> addOrderItems(@RequestBody Item item){
-        Item newItem = itemService.addItems(item);
-        return List.of("Success", newItem);
-    }
     @DeleteMapping(path = "items/{itemID}")
     @ResponseStatus(HttpStatus.OK)
     public List<String> deleteOrderItems(@PathVariable("itemID") Long itemID){

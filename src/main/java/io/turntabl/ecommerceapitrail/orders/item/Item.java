@@ -96,8 +96,11 @@ public class Item {
     @Override
     public String toString() {
         return "Item{" +
-                "Item=" + order +
+                "Id=" + Id +
+                ", order=" + order +
                 ", quantity=" + quantity +
+                ", product=" + product +
+                ", price=" + price +
                 ", dateAdded=" + dateAdded +
                 ", dateModified=" + dateModified +
                 '}';

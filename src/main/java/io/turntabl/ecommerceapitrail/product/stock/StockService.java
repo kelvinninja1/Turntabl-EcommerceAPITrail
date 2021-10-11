@@ -44,13 +44,15 @@ public class StockService {
     }
 
     @Transactional
-    public void updateStock(Long productID, Integer quantity) {
+    public Stock updateStock(Long productID, Stock newStock) {
+        Integer quantity = newStock.getQuantity();
         Stock stock = stockRepository.findByProduct(productID).orElseThrow(() -> new IllegalStateException("Stock with Product ID:" + productID + " does not exist"));
 
         if (quantity > 0 && !Objects.equals(quantity, stock.getQuantity())) {
             stock.setQuantity(quantity);
             stock.setDateModified(LocalDate.now());
         }
+        return stock;
     }
 
     public List<Stock> getAvailableStocks() {

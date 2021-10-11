@@ -7,8 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 
@@ -36,9 +34,8 @@ class ProductServiceTest {
     void canAddProducts() {
         //given
         Product product = new Product(
-                "M1 MacBook Pro",
-                BigDecimal.valueOf(2),
-                2);
+                "M1 MacBook Pro"
+        );
         //when
         productServiceUnderTest.addProducts(product);
         //then
