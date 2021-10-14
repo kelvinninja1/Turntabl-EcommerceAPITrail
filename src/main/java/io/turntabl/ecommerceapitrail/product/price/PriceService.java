@@ -1,9 +1,15 @@
 package io.turntabl.ecommerceapitrail.product.price;
 
+import io.turntabl.ecommerceapitrail.common.exceptions.AlreadyExistException;
+import io.turntabl.ecommerceapitrail.common.exceptions.BadRequestException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotAcceptableException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,36 +30,51 @@ public class PriceService {
         return priceRepository.findAll();
     }
 
-    public Price addPrices(Price price) {
-        if (price == null) {
-            throw new IllegalStateException("Price details are empty");
+    public ResponseEntity<Price> addPrices(Price price) {
+        if (price.getAmount() != null && price.getProduct() != null && price.getProduct() > 0) {
+            boolean exists = priceRepository.existsByProduct(price.getProduct());
+            if (exists) {
+                throw new AlreadyExistException("Price with Product ID:" + price.getProduct() + " already exist");
+            }
+            Price newPrice = priceRepository.save(price);
+            return new ResponseEntity<Price>(newPrice, HttpStatus.CREATED);
+        } else {
+            throw new BadRequestException("Price details are empty");
         }
-        priceRepository.save(price);
-        return price;
     }
 
-    public Price getPrice(Long productID) {
-        return priceRepository.findByProduct(productID).orElseThrow(() -> new IllegalStateException("Price with Product ID:" + productID + " does not exist"));
+    public ResponseEntity<Price> getPrice(Long productID) {
+        Price price = priceRepository.findByProduct(productID).orElseThrow(() -> new NotFoundException("Price with Product ID:" + productID + " does not exist"));
+        return new ResponseEntity<Price>(price, HttpStatus.OK);
     }
 
-    public void deletePrice(Long productID) {
+    public ResponseEntity<Price> deletePrice(Long productID) {
         boolean exists = priceRepository.existsByProduct(productID);
         if (!exists) {
-            throw new IllegalStateException("Price with Product ID:" + productID + " does not exist");
+            throw new NotFoundException("Price with Product ID:" + productID + " does not exist");
         }
         priceRepository.deleteByProduct(productID);
+        return new ResponseEntity<Price> (HttpStatus.NO_CONTENT);
     }
 
-    @Transactional
-    public Price updatePrice(Long productID, Price newPrice) {
-        BigDecimal amount = newPrice.getAmount();
-        Price price = priceRepository.findByProduct(productID).orElseThrow(() -> new IllegalStateException("Price with Product ID:" + productID + " does not exist"));
+    public ResponseEntity<Price> updatePrice(Long productID, Price updatedPrice) {
+        BigDecimal amount = updatedPrice.getAmount();
+        Price price = priceRepository.findByProduct(productID).orElseThrow(() -> new NotFoundException("Price with Product ID:" + productID + " does not exist"));
 
-        if (!Objects.equals(amount, price.getAmount())) {
-            price.setAmount(amount);
-            price.setDateModified(LocalDate.now());
+        if (amount != null && amount.equals(BigDecimal.valueOf(0))) {
+            if (Objects.equals(amount, price.getAmount())) {
+                throw new NotAcceptableException("No change Required, Updated details already exist");
+            } else {
+                BeanUtils.copyProperties(updatedPrice, price);
+                price.setProduct(productID);
+                price.setDateModified(LocalDate.now());
+                priceRepository.save(price);
+                return new ResponseEntity<Price>(price, HttpStatus.ACCEPTED);
+            }
         }
-        return price;
+        else {
+            throw new BadRequestException("Price details are empty, bad or Un-formatted");
+        }
     }
 
 }
