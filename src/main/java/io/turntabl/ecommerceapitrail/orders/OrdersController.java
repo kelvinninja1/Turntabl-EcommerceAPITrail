@@ -9,6 +9,7 @@ import io.turntabl.ecommerceapitrail.product.stock.Stock;
 import io.turntabl.ecommerceapitrail.product.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -64,12 +65,6 @@ public class OrdersController {
         // Consider updating Stock
         itemService.deleteItem(orderID);
         return List.of("Success");
-    }
-
-    @GetMapping(path = "/stock")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Stock> listOrdersStock(){
-        return stockService.getStocks();
     }
 
     @DeleteMapping(path = "items/{itemID}")
