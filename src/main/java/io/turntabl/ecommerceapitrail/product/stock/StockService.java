@@ -1,9 +1,15 @@
 package io.turntabl.ecommerceapitrail.product.stock;
 
+import io.turntabl.ecommerceapitrail.common.exceptions.AlreadyExistException;
+import io.turntabl.ecommerceapitrail.common.exceptions.BadRequestException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotAcceptableException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -19,47 +25,65 @@ public class StockService {
     }
 
 
-    public List<Stock> getStocks() {
-        return stockRepository.findAll();
+    public ResponseEntity<List<Stock>> getStocks() {
+        return new ResponseEntity<List<Stock>>(stockRepository.findAll(), HttpStatus.OK);
     }
 
-    public Stock addStocks(Stock stock) {
-        if (stock == null) {
-            throw new IllegalStateException("Stock details are empty");
+    public ResponseEntity<Stock> addStocks(Stock stock) {
+        if (stock.getQuantity() != null && stock.getProduct() != null && stock.getProduct() > 0 ) {
+            Boolean exists = stockRepository.existsByProduct(stock.getProduct());
+            if (exists) {
+                throw new AlreadyExistException("Stock with Product ID:" + stock.getProduct() + " already exist");
+            }
+
+            Stock newStock = stockRepository.save(stock);
+            return new ResponseEntity<Stock>(newStock, HttpStatus.CREATED);
+        } else {
+            throw new BadRequestException("Stock details are empty");
         }
-        stockRepository.save(stock);
-        return stock;
     }
 
-    public Stock getStock(Long productID) {
-        return stockRepository.findByProduct(productID).orElseThrow(() -> new IllegalStateException("Stock with Product ID:" + productID + " does not exist"));
+    public ResponseEntity<Stock> getStock(Long productID) {
+        Stock stock = stockRepository.findByProduct(productID).orElseThrow(() -> new NotFoundException("Stock with Product ID:" + productID + " does not exist"));
+        return new ResponseEntity<Stock>(stock, HttpStatus.OK);
     }
 
-    public void deleteStock(Long productID) {
+    public ResponseEntity<Stock> deleteStock(Long productID) {
         boolean exists = stockRepository.existsByProduct(productID);
         if (!exists) {
-            throw new IllegalStateException("Stock with Product ID:" + productID + " does not exist");
+            throw new NotFoundException("Stock with Product ID:" + productID + " does not exist");
         }
         stockRepository.deleteByProduct(productID);
+        return new ResponseEntity<Stock> (HttpStatus.NO_CONTENT);
     }
 
-    @Transactional
-    public Stock updateStock(Long productID, Stock newStock) {
-        Integer quantity = newStock.getQuantity();
-        Stock stock = stockRepository.findByProduct(productID).orElseThrow(() -> new IllegalStateException("Stock with Product ID:" + productID + " does not exist"));
+    public ResponseEntity<Stock> updateStock(Long productID, Stock updatedStock) {
+        Integer quantity = updatedStock.getQuantity();
+        Stock stock = stockRepository.findByProduct(productID).orElseThrow(() -> new NotFoundException("Stock with Product ID:" + productID + " does not exist"));
 
-        if (quantity > 0 && !Objects.equals(quantity, stock.getQuantity())) {
-            stock.setQuantity(quantity);
-            stock.setDateModified(LocalDate.now());
+        if (quantity != null && quantity > 0) {
+            if (Objects.equals(quantity, stock.getQuantity())) {
+                throw new NotAcceptableException("No change Required, Updated details already exist");
+            } else {
+                BeanUtils.copyProperties(updatedStock, stock);
+                stock.setProduct(productID);
+                stock.setDateModified(LocalDate.now());
+                stockRepository.save(stock);
+                return new ResponseEntity<Stock>(stock, HttpStatus.ACCEPTED);
+            }
         }
-        return stock;
+        else {
+            throw new BadRequestException("Stock details are empty, bad or Un-formatted");
+        }
     }
 
-    public List<Stock> getAvailableStocks() {
-        return stockRepository.findAllByQuantityGreaterThan(0);
+    public ResponseEntity<List<Stock>> getAvailableStocks() {
+        List<Stock> stocks = stockRepository.findAllByQuantityGreaterThan(0);
+        return new ResponseEntity<List<Stock>>(stocks, HttpStatus.OK);
     }
 
-    public List<Stock> getUnavailableStocks() {
-        return stockRepository.findAllByQuantityLessThan(1);
+    public ResponseEntity<List<Stock>> getUnavailableStocks() {
+        List<Stock> stocks = stockRepository.findAllByQuantityLessThan(1);
+        return new ResponseEntity<List<Stock>>(stocks, HttpStatus.OK);
     }
 }
