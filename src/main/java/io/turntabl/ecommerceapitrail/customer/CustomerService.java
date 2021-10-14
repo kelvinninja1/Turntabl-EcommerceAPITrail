@@ -1,10 +1,8 @@
 package io.turntabl.ecommerceapitrail.customer;
 
-import io.turntabl.ecommerceapitrail.common.exceptions.AlreadyExistException;
 import io.turntabl.ecommerceapitrail.common.exceptions.BadRequestException;
 import io.turntabl.ecommerceapitrail.common.exceptions.NotAcceptableException;
 import io.turntabl.ecommerceapitrail.common.exceptions.NotFoundException;
-import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +26,7 @@ public class CustomerService {
 
     public ResponseEntity<List<Customer>> getCustomers() {
         List<Customer> customers = customerRepository.findAll();
-        return new ResponseEntity<List<Customer>>(customers, HttpStatus.CREATED);
+        return new ResponseEntity<List<Customer>>(customers, HttpStatus.OK);
     }
 
     public ResponseEntity<Customer> addCustomers(Customer customer) {
@@ -43,7 +41,7 @@ public class CustomerService {
 
     public ResponseEntity<Customer> getCustomer(Long customerID) {
         Customer customer = customerRepository.findById(customerID).orElseThrow(() -> new NotFoundException("Customer with ID:" + customerID + " does not exist"));
-        return new ResponseEntity<Customer>(customer, HttpStatus.CREATED);
+        return new ResponseEntity<Customer>(customer, HttpStatus.OK);
     }
 
     public ResponseEntity<Customer> deleteCustomer(Long customerID) {
@@ -60,14 +58,14 @@ public class CustomerService {
 
         String name = updatedCustomer.getName();
         if (name != null && name.length() > 0) {
-            if (!Objects.equals(name, customer.getName())) {
+            if (Objects.equals(name, customer.getName())) {
+                throw new NotAcceptableException("No change Required, Updated details already exist");
+            } else {
                 BeanUtils.copyProperties(updatedCustomer, customer);
                 customer.setId(customerID);
                 customer.setDateModified(LocalDate.now());
                 customerRepository.save(customer);
                 return new ResponseEntity<Customer>(customer,HttpStatus.ACCEPTED);
-            } else {
-                throw new NotAcceptableException("No change Required, Updated details already exist");
             }
         } else {
             throw new BadRequestException("Customer details are empty, bad or Un-formatted");
