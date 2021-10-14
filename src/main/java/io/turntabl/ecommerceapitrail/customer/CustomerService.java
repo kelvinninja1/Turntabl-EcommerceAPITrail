@@ -45,10 +45,7 @@ public class CustomerService {
     }
 
     public ResponseEntity<Customer> deleteCustomer(Long customerID) {
-        boolean exists = customerRepository.existsById(customerID);
-        if (!exists) {
-            throw new NotFoundException("Customer with ID:" + customerID + " does not exist");
-        }
+        checkIfCustomerExists(customerID);
         customerRepository.deleteById(customerID);
         return new ResponseEntity<Customer>(HttpStatus.NO_CONTENT);
     }
@@ -69,6 +66,13 @@ public class CustomerService {
             }
         } else {
             throw new BadRequestException("Customer details are empty, bad or Un-formatted");
+        }
+    }
+
+    public void checkIfCustomerExists(Long customerID) {
+        boolean exists = customerRepository.existsById(customerID);
+        if (!exists) {
+            throw new NotFoundException("Customer with ID:" + customerID + " does not exist");
         }
     }
 }
