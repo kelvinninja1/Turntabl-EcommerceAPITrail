@@ -92,26 +92,22 @@ public class ProductController {
     }
 
     @PostMapping(path = "/price")
-    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Price> addPrices(@NotNull @RequestBody Price price){
         productService.checkIfProductExists(price.getProduct());
         return priceService.addPrices(price);
     }
 
     @PutMapping(path = "{productID}/price")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Price> updatePrice(@NotNull @PathVariable("productID") Long productID, @NotNull @RequestBody Price price){
         return priceService.updatePrice(productID, price);
     }
 
     @GetMapping(path = "{productID}/price")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Price> getProductPrice(@NotNull @PathVariable("productID") Long productID){
         return priceService.getPrice(productID);
     }
 
     @DeleteMapping(path = "{productID}/price")
-    @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Price> deleteProductPrice(@NotNull @PathVariable("productID") Long productID){
         return priceService.deletePrice(productID);
     }
