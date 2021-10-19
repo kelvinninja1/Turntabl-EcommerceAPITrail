@@ -1,16 +1,16 @@
 package io.turntabl.ecommerceapitrail.product;
 
+import com.sun.istack.NotNull;
 import io.turntabl.ecommerceapitrail.product.price.Price;
 import io.turntabl.ecommerceapitrail.product.price.PriceService;
 import io.turntabl.ecommerceapitrail.product.stock.Stock;
 import io.turntabl.ecommerceapitrail.product.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("v1/products")
@@ -29,73 +29,87 @@ public class ProductController {
 
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Product> listProducts(){
+    public ResponseEntity<List<Product>> listProducts(){
         return productService.getProducts();
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Object> addProducts(@RequestBody Product product){
-        Product newProduct = productService.addProducts(product);
-        stockService.addStocks(new Stock(newProduct.getId(), newProduct.getQuantity()));
-        priceService.addPrices(new Price(newProduct.getId(), newProduct.getPrice()));
-        return List.of("Success", newProduct);
+    public ResponseEntity<Product> addProducts(@NotNull @RequestBody Product product){
+        return productService.addProducts(product);
     }
 
     @GetMapping(path = "{productID}")
-    @ResponseStatus(HttpStatus.OK)
-    public Product getProduct(@PathVariable("productID") Long productID){
+    public ResponseEntity<Product> getProduct(@NotNull @PathVariable("productID") Long productID){
         return productService.getProduct(productID);
     }
 
     @DeleteMapping(path = "{productID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<String> deleteProduct(@PathVariable("productID") Long productID){
-        productService.deleteProduct(productID);
-        stockService.deleteStock(productID);
-        priceService.deletePrice(productID);
-        return List.of("Success");
+    public ResponseEntity<Product> deleteProduct(@NotNull @PathVariable("productID") Long productID){
+        return productService.deleteProduct(productID);
     }
 
     @PutMapping(path = "{productID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Object> updateProduct(@PathVariable("productID") Long productID, @RequestBody Map<String, Object> change){
-        productService.updateProduct(productID, change);
-        stockService.updateStock(productID, Integer.parseInt(change.get("quantity").toString()));
-        priceService.updatePrice(productID, BigDecimal.valueOf(Long.parseLong(change.get("price").toString())));
-        return List.of("Success",
-                change);
+    public ResponseEntity<Product> updateProduct(@NotNull @PathVariable("productID") Long productID, @NotNull  @RequestBody Product updatedProduct){
+        return productService.updateProduct(productID, updatedProduct);
     }
 
     @GetMapping(path = "/stock")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Stock> listProductsStock(){
+    public ResponseEntity<List<Stock>> listProductsStock(){
         return stockService.getStocks();
     }
 
+    @PostMapping(path = "/stock")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Stock> addStocks(@NotNull @RequestBody Stock stock){
+        productService.checkIfProductExists(stock.getProduct());
+        return stockService.addStocks(stock);
+    }
+
     @GetMapping(path = "/stock/available")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Stock> listProductsStockAvailable(){
+    public ResponseEntity<List<Stock>> listProductsStockAvailable(){
         return stockService.getAvailableStocks();
     }
 
     @GetMapping(path = "/stock/unavailable")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Stock> listProductsStockUnavailable(){
+    public ResponseEntity<List<Stock>> listProductsStockUnavailable(){
         return stockService.getUnavailableStocks();
     }
 
 
     @GetMapping(path = "{productID}/stock")
-    @ResponseStatus(HttpStatus.OK)
-    public Stock getProductStock(@PathVariable("productID") Long productID){
+    public ResponseEntity<Stock> getProductStock(@NotNull @PathVariable("productID") Long productID){
         return stockService.getStock(productID);
     }
 
+    @PutMapping(path = "{productID}/stock")
+    public ResponseEntity<Stock> updateStock(@NotNull @PathVariable("productID") Long productID, @NotNull @RequestBody Stock updatedStock){
+        return stockService.updateStock(productID, updatedStock);
+    }
+
+    @DeleteMapping(path = "{productID}/stock")
+    public ResponseEntity<Stock> deleteProductStock(@NotNull @PathVariable("productID") Long productID){
+        return stockService.deleteStock(productID);
+    }
+
+    @PostMapping(path = "/price")
+    public ResponseEntity<Price> addPrices(@NotNull @RequestBody Price price){
+        productService.checkIfProductExists(price.getProduct());
+        return priceService.addPrices(price);
+    }
+
+    @PutMapping(path = "{productID}/price")
+    public ResponseEntity<Price> updatePrice(@NotNull @PathVariable("productID") Long productID, @NotNull @RequestBody Price price){
+        return priceService.updatePrice(productID, price);
+    }
+
     @GetMapping(path = "{productID}/price")
-    @ResponseStatus(HttpStatus.OK)
-    public Price getProductPrice(@PathVariable("productID") Long productID){
+    public ResponseEntity<Price> getProductPrice(@NotNull @PathVariable("productID") Long productID){
         return priceService.getPrice(productID);
     }
+
+    @DeleteMapping(path = "{productID}/price")
+    public ResponseEntity<Price> deleteProductPrice(@NotNull @PathVariable("productID") Long productID){
+        return priceService.deletePrice(productID);
+    }
+
 }

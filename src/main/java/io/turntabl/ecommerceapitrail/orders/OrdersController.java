@@ -1,18 +1,17 @@
 package io.turntabl.ecommerceapitrail.orders;
 
+import com.sun.istack.NotNull;
+import io.turntabl.ecommerceapitrail.customer.CustomerService;
 import io.turntabl.ecommerceapitrail.orders.item.Item;
 import io.turntabl.ecommerceapitrail.orders.item.ItemService;
-import io.turntabl.ecommerceapitrail.product.price.Price;
 import io.turntabl.ecommerceapitrail.product.price.PriceService;
-import io.turntabl.ecommerceapitrail.product.stock.Stock;
 import io.turntabl.ecommerceapitrail.product.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("v1/orders")
@@ -21,88 +20,67 @@ public class OrdersController {
     private final ItemService itemService;
     private final StockService stockService;
     private final PriceService priceService;
+    private final CustomerService customerService;
 
     @Autowired
-    public OrdersController(OrdersService ordersService, ItemService itemService, StockService stockService, PriceService priceService) {
+    public OrdersController(OrdersService ordersService, ItemService itemService, StockService stockService, PriceService priceService, CustomerService customerService) {
         this.ordersService = ordersService;
         this.itemService = itemService;
         this.stockService = stockService;
         this.priceService = priceService;
+        this.customerService = customerService;
     }
 
-
-
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Orders> listOrders(){
+    public ResponseEntity<List<Orders>> listOrders(){
         return ordersService.getOrders();
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Object> addOrders(@RequestBody Orders order){
-        Orders newOrder = ordersService.addOrders(order);
-        return List.of("Success", newOrder);
+    public ResponseEntity<Orders> addOrders(@NotNull @RequestBody Orders order){
+        customerService.checkIfCustomerExists(order.getCustomer());
+        return ordersService.addOrders(order);
     }
 
     @GetMapping(path = "{orderID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List getOrder(@PathVariable("orderID") Long orderID){
+    public ResponseEntity<Object> getOrder(@NotNull @PathVariable("orderID") Long orderID){
         Orders order = ordersService.getOrder(orderID);
         List<Item> orderItems = itemService.getOrderItems(orderID);
-        return List.of(
-                order,
-                orderItems
-        );
+
+        return new  ResponseEntity<Object>(
+                List.of(
+                ordersService.getOrder(orderID),
+                itemService.getOrderItems(orderID)
+                ),
+                HttpStatus.OK);
     }
 
     @DeleteMapping(path = "{orderID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<String> deleteOrder(@PathVariable("orderID") Long orderID){
-        ordersService.deleteOrder(orderID);
-        // Consider updating Stock
-        itemService.deleteItem(orderID);
-        return List.of("Success");
+    public ResponseEntity<Orders> deleteOrder(@NotNull @PathVariable("orderID") Long orderID){
+        //TODO: Consider updating Stock
+        itemService.deleteItems(orderID);
+        return ordersService.deleteOrder(orderID);
     }
 
-    @GetMapping(path = "/stock")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Stock> listOrdersStock(){
-        return stockService.getStocks();
-    }
-
-    @GetMapping(path = "{orderID}/item")
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Object> addOrderItems(@RequestBody Item item){
-        Item newItem = itemService.addItems(item);
-        return List.of("Success", newItem);
-    }
     @DeleteMapping(path = "items/{itemID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<String> deleteOrderItems(@PathVariable("itemID") Long itemID){
-        itemService.deleteItem(itemID);
-        return List.of("Success");
+    public ResponseEntity<Item> deleteOrderItems(@NotNull @PathVariable("itemID") Long itemID){
+        return itemService.deleteItem(itemID);
     }
 
     @PutMapping(path = "items/{itemID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Object> updateItem(@PathVariable("itemID") Long itemID, @RequestBody Map<String, Object> change){
-        itemService.updateItem(itemID, change);
-        return List.of("Success",
-                change);
+    public ResponseEntity<Item> updateItem(@NotNull @PathVariable("itemID") Long itemID, @NotNull @RequestBody Item updatedItem){
+        return itemService.updateItem(itemID, updatedItem);
     }
 
 
     @GetMapping("orders/last/{months}/months")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Orders> listOrdersOverLastXMonths(@PathVariable("months") Integer months){
+    public ResponseEntity<List<Orders>> listOrdersOverLastXMonths(@NotNull @PathVariable("months") Integer months){
         return ordersService.getOrdersOverLastXMonths(months);
     }
 
 
     @GetMapping("orders/multiple/customers/")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Orders> listCustomersWithMultipleOrders(){
+    public ResponseEntity<List<Orders>> listCustomersWithMultipleOrders(){
         return ordersService.getCustomersWithMultipleOrders();
     }
 
