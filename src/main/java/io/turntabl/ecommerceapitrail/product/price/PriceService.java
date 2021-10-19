@@ -44,8 +44,12 @@ public class PriceService {
     }
 
     public ResponseEntity<Price> getPrice(Long productID) {
+        return new ResponseEntity<Price>(findPrice(productID), HttpStatus.OK);
+    }
+
+    public Price findPrice(Long productID) {
         Price price = priceRepository.findByProduct(productID).orElseThrow(() -> new NotFoundException("Price with Product ID:" + productID + " does not exist"));
-        return new ResponseEntity<Price>(price, HttpStatus.OK);
+        return price;
     }
 
     public ResponseEntity<Price> deletePrice(Long productID) {
@@ -75,6 +79,10 @@ public class PriceService {
         else {
             throw new BadRequestException("Price details are empty, bad or Un-formatted");
         }
+    }
+
+    public List<BigDecimal> getPriceAmountsByProductsIDs(List<Long> productIDsByOrderIDs) {
+        return priceRepository.findAllAmountsByProductsIDs(productIDsByOrderIDs);
     }
 
 }

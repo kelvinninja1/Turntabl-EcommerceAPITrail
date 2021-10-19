@@ -32,13 +32,12 @@ public class ItemService {
         return itemRepository.findAllByOrder(orderID);
     }
 
-    public ResponseEntity<Item> addItems(Item item) {
-        if (item.getOrder() != null && item.getProduct() != null && item.getPrice() != null && item.getQuantity() != null && item.getQuantity() > 0) {
-            Item newItem = itemRepository.save(item);
-            return new ResponseEntity<Item>(newItem, HttpStatus.CREATED);
-        } else {
-            throw new BadRequestException("Item details are empty, bad or Un-formatted");
+    public Item addItems(Item item) {
+        if (item == null) {
+            throw new IllegalStateException("Item details are empty");
         }
+        itemRepository.save(item);
+        return item;
     }
 
     public Item getItem(Long orderID) {

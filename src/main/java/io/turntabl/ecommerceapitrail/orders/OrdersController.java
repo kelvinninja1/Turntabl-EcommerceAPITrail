@@ -1,9 +1,11 @@
 package io.turntabl.ecommerceapitrail.orders;
 
 import com.sun.istack.NotNull;
+import io.turntabl.ecommerceapitrail.customer.Customer;
 import io.turntabl.ecommerceapitrail.customer.CustomerService;
 import io.turntabl.ecommerceapitrail.orders.item.Item;
 import io.turntabl.ecommerceapitrail.orders.item.ItemService;
+import io.turntabl.ecommerceapitrail.product.ProductService;
 import io.turntabl.ecommerceapitrail.product.price.PriceService;
 import io.turntabl.ecommerceapitrail.product.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -21,14 +24,16 @@ public class OrdersController {
     private final StockService stockService;
     private final PriceService priceService;
     private final CustomerService customerService;
+    private final ProductService productService;
 
     @Autowired
-    public OrdersController(OrdersService ordersService, ItemService itemService, StockService stockService, PriceService priceService, CustomerService customerService) {
+    public OrdersController(OrdersService ordersService, ItemService itemService, StockService stockService, PriceService priceService, CustomerService customerService, ProductService productService) {
         this.ordersService = ordersService;
         this.itemService = itemService;
         this.stockService = stockService;
         this.priceService = priceService;
         this.customerService = customerService;
+        this.productService = productService;
     }
 
     @GetMapping
@@ -84,6 +89,47 @@ public class OrdersController {
         return ordersService.getCustomersWithMultipleOrders();
     }
 
+    @GetMapping("orders/products/{productID}/customers/")
+    public ResponseEntity<List<Customer>> listCustomersWhoPurchasedProductX(@NotNull @PathVariable("productID") Long productID){
+        //TODO: Get orderId from Order items where product equals X - AS orderIds
+        List<Long> orderIdsByProduct = itemService.getOrderIDsByProduct(productID);
+
+        //TODO: Get customerId from Orders where OrderID in orderIds - AS CustomersIds
+        List<Long> customerIDsByOrderIds = ordersService.getCustomerIDsByOrderIds(orderIdsByProduct);
+        //TODO: OR
+        //TODO: Foreach orderId In OrderIds Get CustomerIds & add to List - AS CustomersIds
+
+        //TODO: Get CustomerList from Customers where CustomerId in customerIds - AS CustomerList
+        //TODO: OR
+        //TODO: Foreach orderId In OrderIds Get CustomerIds & add to List - AS CustomersIds
+
+        return customerService.getCustomersIn(customerIDsByOrderIds);
+    }
+
+    @GetMapping("orders/customers/{customerID}/spend/")
+    public ResponseEntity<BigDecimal> getTotalSpendOfCustomer(@NotNull @PathVariable("CustomerID") Long customerID){
+        //TODO: Get OrderIDs from Orders where customerID equals X - AS OrderIds
+        List<Long> orderIDs = ordersService.getOrderIDsCustomer(customerID);
+        //TODO: Get and Count Distinct ProductID Group By Item Where OrderId In OrderIds - AS ProductIds
+        List<Long> productIDsByOrderIDs = itemService.getProductIDsByOrderIDs(orderIDs);
+        List<Integer> productCountsByProductIDs = itemService.getProductCountsByProductIDs(productIDsByOrderIDs);
+        //TODO: Get Price from Prices where ProductID in Product Ids
+        List<BigDecimal> priceAmountsByProductsIDs = priceService.getPriceAmountsByProductsIDs(productIDsByOrderIDs);
+        //TODO: Multiply price by count then sum up
+        BigDecimal customerSpend = customerService.calculateSpend(productIDsByOrderIDs, productCountsByProductIDs, priceAmountsByProductsIDs);
+        return new ResponseEntity<BigDecimal> (customerSpend, HttpStatus.OK);
+    }
+
+    @GetMapping("orders/products/{productID}/sales/")
+    public ResponseEntity<BigDecimal> getTotalSalesOfProduct(@NotNull @PathVariable("productID") Long productID){
+        //TODO: Get and Count X ProductID
+        Integer countByProduct = itemService.getCountByProduct(productID);
+        //TODO: Get Price by ProductID
+        BigDecimal price = priceService.findPrice(productID).getAmount();
+        //TODO: Multiply price by count
+        BigDecimal productSales = productService.calculateTotalSales(countByProduct, price);
+        return new ResponseEntity<BigDecimal>(productSales, HttpStatus.OK);
+    }
 
 
 }

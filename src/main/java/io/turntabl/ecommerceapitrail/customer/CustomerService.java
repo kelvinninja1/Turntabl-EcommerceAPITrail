@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -74,5 +75,30 @@ public class CustomerService {
         if (!exists) {
             throw new NotFoundException("Customer with ID:" + customerID + " does not exist");
         }
+    }
+
+    public ResponseEntity<List<Customer>> getCustomersIn(List<Long> customerIDsByOrderIds) {
+        return new ResponseEntity<List<Customer>>(customerRepository.findAllByIdIn(customerIDsByOrderIds), HttpStatus.OK);
+    }
+
+    public BigDecimal calculateSpend(List<Long> productIDsByOrderIDs, List<Integer> productCountsByProductIDs, List<BigDecimal> priceAmountsByProductsIDs) {
+        if (!isOfEqualSizesAndIfNull(productIDsByOrderIDs, productCountsByProductIDs, priceAmountsByProductsIDs)) {
+            return BigDecimal.valueOf(0);
+        }
+        BigDecimal spend = BigDecimal.valueOf(0);
+        for (int i = 0; i < productIDsByOrderIDs.size(); i++) {
+            spend.add(priceAmountsByProductsIDs.get(i).multiply(BigDecimal.valueOf(productCountsByProductIDs.get(i))));
+        }
+        return spend;
+    }
+
+    private Boolean isOfEqualSizesAndIfNull(List<Long> productIDsByOrderIDs, List<Integer> productCountsByProductIDs, List<BigDecimal> priceAmountsByProductsIDs) {
+        if (productIDsByOrderIDs != null) {
+            int required = productIDsByOrderIDs.size();
+            if (required < 1 || required != productCountsByProductIDs.size() || required != priceAmountsByProductsIDs.size()){
+                return Boolean.FALSE;
+            }
+        }
+        return Boolean.TRUE;
     }
 }
