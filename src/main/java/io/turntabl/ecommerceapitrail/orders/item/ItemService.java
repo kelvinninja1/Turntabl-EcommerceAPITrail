@@ -1,12 +1,16 @@
 package io.turntabl.ecommerceapitrail.orders.item;
 
+import io.turntabl.ecommerceapitrail.common.exceptions.BadRequestException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotAcceptableException;
+import io.turntabl.ecommerceapitrail.common.exceptions.NotFoundException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -38,25 +42,44 @@ public class ItemService {
     }
 
     public Item getItem(Long orderID) {
-        return itemRepository.findByOrder(orderID).orElseThrow(() -> new IllegalStateException("Item with Order ID:" + orderID + " does not exist"));
+        return itemRepository.findByOrder(orderID).orElseThrow(() -> new NotFoundException("Item with Order ID:" + orderID + " does not exist"));
     }
 
-    public void deleteItem(Long orderID) {
+    public ResponseEntity<Item> deleteItems(Long orderID) {
         boolean exists = itemRepository.existsByOrder(orderID);
         if (!exists) {
-            throw new IllegalStateException("Item with Order ID:" + orderID + " does not exist");
+            throw new NotFoundException("Item with Order ID:" + orderID + " does not exist");
         }
-        itemRepository.deleteByOrder(orderID);
+        itemRepository.deleteAllByOrder(orderID);
+        return new ResponseEntity<Item> (HttpStatus.NO_CONTENT);
     }
 
-    @Transactional
-    public void updateItem(Long itemID, Map<String, Object> change) {
-        Item item = itemRepository.findById(itemID).orElseThrow(() -> new IllegalStateException("Item with Order ID:" + itemID + " does not exist"));
+    public ResponseEntity<Item> deleteItem(Long itemID) {
+        boolean exists = itemRepository.existsById(itemID);
+        if (!exists) {
+            throw new NotFoundException("Item with Order ID:" + itemID + " does not exist");
+        }
+        itemRepository.deleteById(itemID);
+        return new ResponseEntity<Item> (HttpStatus.NO_CONTENT);
+    }
 
-        Integer quantity = Integer.parseInt(change.get("quantity").toString());
-        if (quantity > 0 && !Objects.equals(quantity, item.getQuantity())) {
-            item.setQuantity(quantity);
-            item.setDateModified(LocalDate.now());
+    public ResponseEntity<Item> updateItem(Long itemID, Item updatedItem) {
+        Item item = itemRepository.findById(itemID).orElseThrow(() -> new NotFoundException("Item with Order ID:" + itemID + " does not exist"));
+
+        Integer quantity = updatedItem.getQuantity();
+        if (quantity != null && quantity > 0) {
+            if (Objects.equals(quantity, item.getQuantity())) {
+                throw new NotAcceptableException("No change Required, Updated details already exist");
+            } else {
+                BeanUtils.copyProperties(updatedItem, item);
+                item.setId(itemID);
+                item.setDateModified(LocalDate.now());
+                itemRepository.save(item);
+                return new ResponseEntity<Item>(item, HttpStatus.ACCEPTED);
+            }
+        }
+        else {
+            throw new BadRequestException("Item details are empty, bad or Un-formatted");
         }
     }
 

@@ -1,11 +1,11 @@
 package io.turntabl.ecommerceapitrail.customer;
 
+import com.sun.istack.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("v1/customers")
@@ -18,37 +18,27 @@ public class CustomerController {
     }
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Customer> listCustomers(){
+    public ResponseEntity<List<Customer>> listCustomers(){
         return customerService.getCustomers();
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public List<Object> addCustomers(@RequestBody Customer customer){
-        customerService.addCustomers(customer);
-        return List.of("Success", customer);
+    public ResponseEntity<Customer> addCustomers(@RequestBody Customer customer){
+        return customerService.addCustomers(customer);
     }
 
     @GetMapping(path = "{customerID}")
-    @ResponseStatus(HttpStatus.OK)
-    public Customer getCustomer(@PathVariable("customerID") Long customerID){
+    public ResponseEntity<Customer> getCustomer(@PathVariable("customerID") Long customerID){
         return customerService.getCustomer(customerID);
     }
 
     @DeleteMapping(path = "{customerID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<String> deleteCustomer(@PathVariable("customerID") Long customerID){
-        customerService.deleteCustomer(customerID);
-        return List.of("Success");
+    public ResponseEntity<Customer> deleteCustomer(@PathVariable("customerID") Long customerID){
+        return customerService.deleteCustomer(customerID);
     }
 
     @PutMapping(path = "{customerID}")
-    @ResponseStatus(HttpStatus.OK)
-    public List<Object> updateCustomer(@PathVariable("customerID") Long customerId, @RequestBody Map<String, Object> change){
-        customerService.updateCustomer(customerId, change);
-        return List.of("Success",
-                change);
-
+    public ResponseEntity<Customer> updateCustomer(@PathVariable("customerID") Long customerId, @NotNull @RequestBody Customer updatedCustomer){
+        return customerService.updateCustomer(customerId, updatedCustomer);
     }
 }

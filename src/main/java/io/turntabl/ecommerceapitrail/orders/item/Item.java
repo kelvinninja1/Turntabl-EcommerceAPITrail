@@ -45,6 +45,13 @@ public class Item {
         this.dateModified = LocalDate.now();
     }
 
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        Id = id;
+    }
 
     public Long getOrder() {
         return order;
@@ -96,8 +103,11 @@ public class Item {
     @Override
     public String toString() {
         return "Item{" +
-                "Item=" + order +
+                "Id=" + Id +
+                ", order=" + order +
                 ", quantity=" + quantity +
+                ", product=" + product +
+                ", price=" + price +
                 ", dateAdded=" + dateAdded +
                 ", dateModified=" + dateModified +
                 '}';

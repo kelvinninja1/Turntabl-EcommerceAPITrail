@@ -5,7 +5,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +24,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Boolean existsByProduct(Long orderID);
 
     void deleteByOrder(Long orderID);
+
+    void deleteAllByOrder(Long orderID);
 
     List<Item> findAllByOrder(Long orderID);
 
