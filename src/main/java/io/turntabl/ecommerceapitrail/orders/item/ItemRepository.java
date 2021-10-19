@@ -1,6 +1,8 @@
 package io.turntabl.ecommerceapitrail.orders.item;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -25,5 +27,16 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     void deleteByOrder(Long orderID);
 
     List<Item> findAllByOrder(Long orderID);
+
+    @Query("SELECT i.Id FROM Item i WHERE i.product = ?1")
+    List<Long> findAllIDsByProduct(Long productID);
+
+    @Query("SELECT i.product FROM Item i WHERE i.order IN (:ids) GROUP BY i.product")
+    List<Long> findAllDistinctProductByOrderIDs(@Param("ids") List<Long>  orderID);
+
+    @Query("SELECT COUNT(i.product) FROM Item i WHERE i.product IN (:ids) GROUP BY i.product")
+    List<Integer> CountProductByProductIDs(@Param("ids") List<Long>  productID);
+
+    Integer countAllByProduct(Long productID);
 
 }

@@ -28,12 +28,13 @@ public class ItemService {
         return itemRepository.findAllByOrder(orderID);
     }
 
-    public Item addItems(Item item) {
-        if (item == null) {
-            throw new IllegalStateException("Item details are empty");
+    public ResponseEntity<Item> addItems(Item item) {
+        if (item.getOrder() != null && item.getProduct() != null && item.getPrice() != null && item.getQuantity() != null && item.getQuantity() > 0) {
+            Item newItem = itemRepository.save(item);
+            return new ResponseEntity<Item>(newItem, HttpStatus.CREATED);
+        } else {
+            throw new BadRequestException("Item details are empty, bad or Un-formatted");
         }
-        itemRepository.save(item);
-        return item;
     }
 
     public Item getItem(Long orderID) {
@@ -59,4 +60,19 @@ public class ItemService {
         }
     }
 
+    public List<Long> getOrderIDsByProduct(Long productID) {
+        return itemRepository.findAllIDsByProduct(productID);
+    }
+
+    public List<Long> getProductIDsByOrderIDs(List<Long> orderIDs) {
+        return itemRepository.findAllDistinctProductByOrderIDs(orderIDs);
+    }
+
+    public List<Integer> getProductCountsByProductIDs(List<Long> productIDs) {
+        return itemRepository.CountProductByProductIDs(productIDs);
+    }
+
+    public Integer getCountByProduct(Long productID) {
+        return itemRepository.countAllByProduct(productID);
+    }
 }

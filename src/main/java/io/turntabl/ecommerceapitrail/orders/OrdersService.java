@@ -65,4 +65,12 @@ public class OrdersService {
     public List<Orders> getCustomersWithMultipleOrders() {
         return ordersRepository.findAllCustomersWithMultipleOrders();
     }
+
+    public List<Long> getCustomerIDsByOrderIds(List<Long> orderIdsByProduct) {
+       return ordersRepository.findAllCustomerIDsByOrderIds(orderIdsByProduct);
+    }
+
+    public List<Long> getOrderIDsCustomer(Long customerID) {
+        return ordersRepository.findAllOrderIDsByCustomer(customerID);
+    }
 }
