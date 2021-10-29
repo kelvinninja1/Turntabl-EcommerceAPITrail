@@ -29,7 +29,7 @@ public class ItemService {
     }
 
     public List<Item> getOrderItems(Long orderID) {
-        return itemRepository.findAllByOrder(orderID);
+        return itemRepository.findAllByOrderID(orderID);
     }
 
     public Item addItems(Item item) {
@@ -41,15 +41,15 @@ public class ItemService {
     }
 
     public Item getItem(Long orderID) {
-        return itemRepository.findByOrder(orderID).orElseThrow(() -> new NotFoundException("Item with Order ID:" + orderID + " does not exist"));
+        return itemRepository.findByOrderID(orderID).orElseThrow(() -> new NotFoundException("Item with Order ID:" + orderID + " does not exist"));
     }
 
     public ResponseEntity<Item> deleteItems(Long orderID) {
-        boolean exists = itemRepository.existsByOrder(orderID);
+        boolean exists = itemRepository.existsByOrderID(orderID);
         if (!exists) {
             throw new NotFoundException("Item with Order ID:" + orderID + " does not exist");
         }
-        itemRepository.deleteAllByOrder(orderID);
+        itemRepository.deleteAllByOrderID(orderID);
         return new ResponseEntity<Item> (HttpStatus.NO_CONTENT);
     }
 

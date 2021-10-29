@@ -48,7 +48,7 @@ public class PriceService {
     }
 
     public Price findPrice(Long productID) {
-        Price price = priceRepository.findByProduct(productID).orElseThrow(() -> new NotFoundException("Price with Product ID:" + productID + " does not exist"));
+        Price price = priceRepository.findFirstByProduct(productID);
         return price;
     }
 
@@ -63,7 +63,7 @@ public class PriceService {
 
     public ResponseEntity<Price> updatePrice(Long productID, Price updatedPrice) {
         BigDecimal amount = updatedPrice.getAmount();
-        Price price = priceRepository.findByProduct(productID).orElseThrow(() -> new NotFoundException("Price with Product ID:" + productID + " does not exist"));
+        Price price = priceRepository.findFirstByProduct(productID);
 
         if (amount != null && amount.equals(BigDecimal.valueOf(0))) {
             if (Objects.equals(amount, price.getAmount())) {

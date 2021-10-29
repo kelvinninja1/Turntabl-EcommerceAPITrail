@@ -12,14 +12,13 @@ import java.util.Optional;
 @Repository
 public interface PriceRepository extends JpaRepository<Price, Long> {
 
-    Optional<Price> findByProduct(Long productID);
+    Price findFirstByProduct(Long productID);
 
     Boolean existsByProduct(Long productID);
 
     void deleteByProduct(Long productID);
 
-    @Query("SELECT p.product FROM Price p WHERE p.product IN (:ids) GROUP BY p.product")
-
+    @Query("SELECT p.amount FROM Price p WHERE p.product IN (:ids) GROUP BY p.product")
     List<BigDecimal> findAllAmountsByProductsIDs(@Param("ids") List<Long>  productID);
 
 }

@@ -87,7 +87,7 @@ public class CustomerService {
         }
         BigDecimal spend = BigDecimal.valueOf(0);
         for (int i = 0; i < productIDsByOrderIDs.size(); i++) {
-            spend.add(priceAmountsByProductsIDs.get(i).multiply(BigDecimal.valueOf(productCountsByProductIDs.get(i))));
+            spend = spend.add(priceAmountsByProductsIDs.get(i).multiply(BigDecimal.valueOf(productCountsByProductIDs.get(i))));
         }
         return spend;
     }

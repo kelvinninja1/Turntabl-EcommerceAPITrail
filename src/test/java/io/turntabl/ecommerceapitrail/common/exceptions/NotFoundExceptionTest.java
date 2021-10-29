@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class NotFoundExceptionTest {
 
     String exceptionMessage = "An error occurred";
-    String exceptionClassPath = "io.turntabl.ecommerceapitrail.common.exceptions.AlreadyExistException";
+    String exceptionClassPath = "io.turntabl.ecommerceapitrail.common.exceptions.NotFoundException";
     String throwableClassPath = "java.lang.Throwable";
 
     @Test

@@ -15,24 +15,24 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     List<Item> findAllByQuantityLessThan(Integer base);
 
-    Optional<Item> findByOrder(Long orderID);
+    Optional<Item> findByOrderID(Long orderID);
 
-    Boolean existsByOrder(Long orderID);
+    Boolean existsByOrderID(Long orderID);
 
     Optional<Item> findByProduct(Long orderID);
 
     Boolean existsByProduct(Long orderID);
 
-    void deleteByOrder(Long orderID);
+    void deleteByOrderID(Long orderID);
 
-    void deleteAllByOrder(Long orderID);
+    void deleteAllByOrderID(Long orderID);
 
-    List<Item> findAllByOrder(Long orderID);
+    List<Item> findAllByOrderID(Long orderID);
 
     @Query("SELECT i.Id FROM Item i WHERE i.product = ?1")
     List<Long> findAllIDsByProduct(Long productID);
 
-    @Query("SELECT i.product FROM Item i WHERE i.order IN (:ids) GROUP BY i.product")
+    @Query("SELECT i.product FROM Item i WHERE i.orderID IN (:ids) GROUP BY i.product")
     List<Long> findAllDistinctProductByOrderIDs(@Param("ids") List<Long>  orderID);
 
     @Query("SELECT COUNT(i.product) FROM Item i WHERE i.product IN (:ids) GROUP BY i.product")
