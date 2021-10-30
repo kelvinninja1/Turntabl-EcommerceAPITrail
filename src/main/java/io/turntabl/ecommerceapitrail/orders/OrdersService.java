@@ -62,4 +62,12 @@ public class OrdersService {
             throw new NotFoundException("Order with ID:" + orderID + " does not exist");
         }
     }
+
+    public List<Long> getCustomerIDsByOrderIds(List<Long> orderIdsByProduct) {
+       return ordersRepository.findAllCustomerIDsByOrderIds(orderIdsByProduct);
+    }
+
+    public List<Long> getOrderIDsCustomer(Long customerID) {
+        return ordersRepository.findAllOrderIDsByCustomer(customerID);
+    }
 }

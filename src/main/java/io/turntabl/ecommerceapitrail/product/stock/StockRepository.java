@@ -1,9 +1,6 @@
 package io.turntabl.ecommerceapitrail.product.stock;
 
-import io.turntabl.ecommerceapitrail.product.Product;
-import io.turntabl.ecommerceapitrail.techstack.TechStack;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

@@ -1,9 +1,11 @@
 package io.turntabl.ecommerceapitrail.orders;
 
 import com.sun.istack.NotNull;
+import io.turntabl.ecommerceapitrail.customer.Customer;
 import io.turntabl.ecommerceapitrail.customer.CustomerService;
 import io.turntabl.ecommerceapitrail.orders.item.Item;
 import io.turntabl.ecommerceapitrail.orders.item.ItemService;
+import io.turntabl.ecommerceapitrail.product.ProductService;
 import io.turntabl.ecommerceapitrail.product.price.PriceService;
 import io.turntabl.ecommerceapitrail.product.stock.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -21,14 +24,16 @@ public class OrdersController {
     private final StockService stockService;
     private final PriceService priceService;
     private final CustomerService customerService;
+    private final ProductService productService;
 
     @Autowired
-    public OrdersController(OrdersService ordersService, ItemService itemService, StockService stockService, PriceService priceService, CustomerService customerService) {
+    public OrdersController(OrdersService ordersService, ItemService itemService, StockService stockService, PriceService priceService, CustomerService customerService, ProductService productService) {
         this.ordersService = ordersService;
         this.itemService = itemService;
         this.stockService = stockService;
         this.priceService = priceService;
         this.customerService = customerService;
+        this.productService = productService;
     }
 
     @GetMapping
@@ -84,6 +89,30 @@ public class OrdersController {
         return ordersService.getCustomersWithMultipleOrders();
     }
 
+    @GetMapping("orders/products/{productID}/customers/")
+    public ResponseEntity<List<Customer>> listCustomersWhoPurchasedProductX(@NotNull @PathVariable("productID") Long productID){
+        List<Long> orderIdsByProduct = itemService.getOrderIDsByProduct(productID);
+        List<Long> customerIDsByOrderIds = ordersService.getCustomerIDsByOrderIds(orderIdsByProduct);
+        return customerService.getCustomersIn(customerIDsByOrderIds);
+    }
+
+    @GetMapping("orders/customers/{customerID}/spend/")
+    public ResponseEntity<BigDecimal> getTotalSpendOfCustomer(@NotNull @PathVariable("customerID") Long customerID){
+        List<Long> orderIDs = ordersService.getOrderIDsCustomer(customerID);
+        List<Long> productIDsByOrderIDs = itemService.getProductIDsByOrderIDs(orderIDs);
+        List<Integer> productCountsByProductIDs = itemService.getProductCountsByProductIDs(productIDsByOrderIDs);
+        List<BigDecimal> priceAmountsByProductsIDs = priceService.getPriceAmountsByProductsIDs(productIDsByOrderIDs);
+        BigDecimal customerSpend = customerService.calculateSpend(productIDsByOrderIDs, productCountsByProductIDs, priceAmountsByProductsIDs);
+        return new ResponseEntity<BigDecimal> (customerSpend, HttpStatus.OK);
+    }
+
+    @GetMapping("orders/products/{productID}/sales/")
+    public ResponseEntity<BigDecimal> getTotalSalesOfProduct(@NotNull @PathVariable("productID") Long productID){
+        Integer countByProduct = itemService.getCountByProduct(productID);
+        BigDecimal price = priceService.findPrice(productID).getAmount();
+        BigDecimal productSales = productService.calculateTotalSales(countByProduct, price);
+        return new ResponseEntity<BigDecimal>(productSales, HttpStatus.OK);
+    }
 
 
 }

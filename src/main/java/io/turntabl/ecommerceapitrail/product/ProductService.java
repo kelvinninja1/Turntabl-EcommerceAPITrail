@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -74,5 +75,9 @@ public class ProductService {
         if (!exists) {
             throw new NotFoundException("Product with ID:" + productID + " does not exist");
         }
+    }
+
+    public BigDecimal calculateTotalSales(Integer countByProduct, BigDecimal price) {
+        return BigDecimal.valueOf(countByProduct).multiply(price);
     }
 }

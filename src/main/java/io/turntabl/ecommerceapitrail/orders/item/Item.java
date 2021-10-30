@@ -17,7 +17,7 @@ public class Item {
             generator = "item_sequence"
     )
     private Long Id;
-    private Long order;
+    private Long orderID;
     private Integer quantity = 0;
     private Long product;
     private Long price;
@@ -28,7 +28,7 @@ public class Item {
     }
 
     public Item(Long Id, Long orderID, Integer quantity, Long product, Long price) {
-        this.order = orderID;
+        this.orderID = orderID;
         this.quantity = quantity;
         this.product = product;
         this.price = price;
@@ -37,7 +37,7 @@ public class Item {
     }
 
     public Item(Long orderID, Integer quantity, Long product, Long price) {
-        this.order = orderID;
+        this.orderID = orderID;
         this.quantity = quantity;
         this.product = product;
         this.price = price;
@@ -50,15 +50,15 @@ public class Item {
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.Id = id;
     }
 
-    public Long getOrder() {
-        return order;
+    public Long getOrderID() {
+        return orderID;
     }
 
-    public void setOrder(Long order) {
-        this.order = order;
+    public void setOrderID(Long orderID) {
+        this.orderID = orderID;
     }
     public Integer getQuantity() {
         return quantity;
@@ -104,7 +104,7 @@ public class Item {
     public String toString() {
         return "Item{" +
                 "Id=" + Id +
-                ", order=" + order +
+                ", orderID=" + orderID +
                 ", quantity=" + quantity +
                 ", product=" + product +
                 ", price=" + price +
