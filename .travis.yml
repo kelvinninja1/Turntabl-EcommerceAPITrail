@@ -1,8 +1,16 @@
 language: java
 jdk:
-  -openjdk11
+  - openjdk16
 
 script: ./mvnw clean install
 
-notifications:
-  wmail: kelvin.morrison@turntabl.io
+before_install:
+  - chmod +x mvnw
+
+jobs:
+  include:
+    - stage: Test
+      script: ./mvnw clean test
+
+notification:
+  email:  kelvin.morrison@turntabl.io
